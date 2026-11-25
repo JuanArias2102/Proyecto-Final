@@ -70,4 +70,15 @@ public class Booster extends Producto {
     public boolean isAbierto() { 
         return abierto; 
     }
+
+    public List<Carta> getContenido() {
+        return new ArrayList<>(contenido);
+    }
+
+    public void restaurarEstado(List<Carta> contenido, Long compradorId, boolean vendido, boolean abierto) {
+        this.contenido = new ArrayList<>(contenido);
+        this.compradorId = compradorId;
+        this.vendido = vendido;
+        this.abierto = abierto;
+    }
 }

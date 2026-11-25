@@ -19,6 +19,9 @@ public abstract class Producto {
     }
 
     public BigDecimal calcularPrecioCOP(BigDecimal tasaCambio) {
+        if (tasaCambio == null || tasaCambio.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("La tasa de cambio debe ser mayor que cero");
+        }
         return precioBaseUSD.multiply(tasaCambio).setScale(2, RoundingMode.HALF_UP);
     }
     public Long getId() { 
