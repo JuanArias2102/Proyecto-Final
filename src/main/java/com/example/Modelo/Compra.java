@@ -6,74 +6,87 @@ import java.util.Date;
 import java.util.List;
 
 public class Compra {
- private Long id;
+    private static long contador = 1;
+    private Long id;
     private Date fecha;
-    private Long clienteId;
-    private List<Producto> productos = new ArrayList<>();
+    private Cliente cliente;
+    private List<Detalle> detalles = new ArrayList<>();
     private BigDecimal totalPagadoCOP = BigDecimal.ZERO;
-    private Factura factura;
 
-    public Compra(Long id, Long clienteId) {
-        this.id = id;
-        this.clienteId = clienteId;
+    public Compra(Cliente cliente) {
+        if (cliente == null) {
+            throw new IllegalArgumentException("El cliente es obligatorio");
+        }
+        this.id = contador++;
         this.fecha = new Date();
+        this.cliente = cliente;
     }
 
-    public void agregarProducto(Producto producto) {
-        productos.add(producto);
+    public Compra(Long id, Cliente cliente) {
+        if (cliente == null) {
+            throw new IllegalArgumentException("El cliente es obligatorio");
+        }
+        this.id = id;
+        this.fecha = new Date();
+        this.cliente = cliente;
+        if (id != null && id >= contador) {
+            contador = id + 1;
+        }
     }
 
-    public BigDecimal calcularTotal(BigDecimal tasaCambio) {
+    public Compra(Long id, Date fecha, Cliente cliente, List<Detalle> detalles) {
+        if (cliente == null || fecha == null || detalles == null) {
+            throw new IllegalArgumentException("Datos de compra inválidos");
+        }
+        this.id = id;
+        this.fecha = fecha;
+        this.cliente = cliente;
+        this.detalles = new ArrayList<>(detalles);
+        this.totalPagadoCOP = calcularTotal();
+        if (id != null && id >= contador) {
+            contador = id + 1;
+        }
+    }
+
+    public void agregarDetalle(Detalle detalle) {
+        if (detalle == null) {
+            throw new IllegalArgumentException("El detalle es obligatorio");
+        }
+        detalles.add(detalle);
+        totalPagadoCOP = calcularTotal();
+    }
+
+    public BigDecimal calcularTotal() {
         BigDecimal total = BigDecimal.ZERO;
-        for (Producto p : productos) {
-            total = total.add(p.calcularPrecioCOP(tasaCambio));
+        for (Detalle detalle : detalles) {
+            total = total.add(detalle.getSubtotal());
         }
         return total;
     }
 
-    
-    public Factura confirmarCompra(Inventario inventario, BigDecimal tasaCambio, String fuenteTasa) {
-        if (productos.isEmpty()) {
-            throw new IllegalArgumentException("La compra no tiene productos");
-        }
-        for (Producto p : productos) {
-            if (!inventario.verificarDisponibilidad(p)) {
-                throw new IllegalStateException("El producto '" + p.getNombre() + "' ya no está disponible");
-            }
-        }
-        this.totalPagadoCOP = calcularTotal(tasaCambio);
-        for (Producto p : productos) {
-            if (p instanceof Booster) {
-                ((Booster) p).marcarVendido(clienteId);
-            }
-            inventario.retirarProducto(p);
-        }
-        this.factura = Factura.generarFactura(this, tasaCambio, fuenteTasa);
-        return factura;
+    public Long getId() {
+        return id;
     }
 
-    public Long getId() { 
-        return id; 
-
-    }
-    public Date getFecha() { 
+    public Date getFecha() {
         return fecha;
-
-     }
-    public Long getClienteId() { 
-        return clienteId; 
-
     }
-    public List<Producto> getProductos() { 
-        return productos;
 
-     }
-    public BigDecimal getTotalPagadoCOP() { 
-        return totalPagadoCOP; 
-
+    public Cliente getCliente() {
+        return cliente;
     }
-    public Factura getFactura() { 
-        return factura; 
 
+    public List<Detalle> getDetalles() {
+        return detalles;
     }
+
+    public BigDecimal getTotalPagadoCOP() {
+        return calcularTotal();
+    }
+
+    // Compatibilidad con el modelo antiguo.
+    public Long getClienteId() {
+        return cliente.getId();
+    }
+
 }
