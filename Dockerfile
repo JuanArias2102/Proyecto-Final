@@ -12,7 +12,6 @@ ENV PORT=4567 \
     TASA_DEFECTO=4000 \
     DATA_FILE=/app/data/datos.json
 
-VOLUME ["/app/data"]
 EXPOSE 4567
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

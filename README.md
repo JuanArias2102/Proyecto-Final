@@ -21,6 +21,7 @@ Las rutas `/estado` y `/tasa` son públicas. Las demás usan autenticación HTTP
 
 | Método | Ruta | Acceso |
 |---|---|---|
+| GET | `/health` | Público |
 | GET | `/estado` | Público |
 | GET | `/tasa` | Público |
 | GET | `/auth/me` | Autenticado |

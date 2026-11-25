@@ -65,6 +65,12 @@ public class ApiRest {
     }
 
     public void registrarRutas() {
+        get("/health", (request, response) -> {
+            Map<String, Object> json = new LinkedHashMap<>();
+            json.put("estado", "ACTIVA");
+            return responder(response, 200, json);
+        });
+
         get("/tasa", (request, response) -> {
             TasaCambioService.ResultadoTasa resultado = tasaCambio.obtenerTasaUsdCop();
             Map<String, Object> json = new LinkedHashMap<>();
